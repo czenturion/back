@@ -1,28 +1,45 @@
-const http = require('http');
-const { randomUUID } = require('crypto');
+const http = require('http')
+const fs = require('fs')
+const { randomUUID } = require('crypto')
 
-let reqCounter = 0;
 
-const server = http.createServer( (req, res) => {
+const readFile = (path) => {
+  return new Promise((resolve, reject) => {
+    fs.readFile('pages/home.html', (err, data) => {
+      if (err) reject(err)
+      else resolve(data)
+    })
+  })
+}
+
+const server = http.createServer(async  (req, res) => {
   if (req.url !== '/favicon.ico') {
-    reqCounter++
+    switch (req.url) {
+      case '/':
+        try {
+          const data = await readFile('pages/home.html')
+          res.write(data)
+        } catch (e) {
+          res.write('500 error occurred...')
+        }
+        res.end()
+        break
+
+      case '/requests':
+        res.write('Requests ')
+        res.end()
+        break
+
+      case '/auth':
+        res.write('UUID: ' + randomUUID())
+        res.end()
+        break
+
+      default:
+        res.write('Not Found')
+        res.end()
+    }
   }
+})
 
-  switch (req.url) {
-    case '/requests':
-      res.write('Requests ' + reqCounter);
-      break;
-
-    case '/auth':
-      res.write('UUID: ' + randomUUID());
-      break;
-
-    default:
-      res.write('Not Found');
-  }
-
-  res.write(' => ' + reqCounter);
-  res.end();
-} )
-
-server.listen(3003);
+server.listen(3003)
