@@ -1,8 +1,8 @@
 FROM node:18
 
-WORKDIR /src
+WORKDIR /dist
 
-COPY . /src
+COPY . /dist
 
 RUN yarn install
 
