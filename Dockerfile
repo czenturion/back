@@ -1,9 +1,16 @@
 FROM node:18
 
-WORKDIR /dist
+WORKDIR /app
 
-COPY . /dist
+COPY package.json yarn.lock ./
 
 RUN yarn install
+
+COPY tsconfig.json ./
+COPY src ./src
+
+RUN yarn build
+
+COPY dist ./dist
 
 CMD ["yarn", "start"]
