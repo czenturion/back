@@ -27,11 +27,12 @@ app.get('/', (req, res) => {
 })
 
 app.get('/users', (req, res) => {
+  const name = req.query.name as string
   let foundUsers = db.users
 
-  if (req.query.name) {
+  if (name) {
     foundUsers = foundUsers
-      .filter(u => u.name.indexOf(req.query.name) > -1)
+      .filter(u => u.name.indexOf(name) > -1)
   }
 
   if (foundUsers.length === 0) {
@@ -43,7 +44,8 @@ app.get('/users', (req, res) => {
 })
 
 app.get('/users/:id', (req, res) => {
-  const foundUser = db.users.find(u => u.id === +req.params.id)
+  const id = req.params.id as string
+  const foundUser = db.users.find(u => u.id === +id)
 
   if (!foundUser) {
     res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
@@ -54,14 +56,15 @@ app.get('/users/:id', (req, res) => {
 })
 
 app.post('/users', (req, res) => {
-  if (!req.body.name) {
+  const name = req.body.name as string
+  if (!name) {
     res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
     return
   }
 
   const createdUser = {
     id: +(new Date()),
-    name: req.body.name
+    name: name
   }
 
   db.users.push(createdUser)
@@ -72,25 +75,28 @@ app.post('/users', (req, res) => {
 })
 
 app.delete('/users/:id', (req, res) => {
-  db.users = db.users.filter(u => u.id !== +req.params.id)
+  const id = req.params.id as string
+  db.users = db.users.filter(u => u.id !== +id)
 
   res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 })
 
 app.put('/users/:id', (req, res) => {
-  if (!req.body.name) {
+  const name = req.body.name as string
+  if (!name) {
     res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
     return
   }
 
-  const foundUser = db.users.find(u => u.id === +req.params.id)
+  const id = req.params.id as string
+  const foundUser = db.users.find(u => u.id === +id)
 
   if (!foundUser) {
     res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
     return
   }
 
-  foundUser.name = req.body.name
+  foundUser.name = name
 
   res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 })

@@ -9,7 +9,7 @@ RUN yarn install
 COPY tsconfig.json ./
 COPY src ./src
 
-RUN yarn build
+RUN yarn tsc --noEmit && yarn build
 
 COPY dist ./dist
 
