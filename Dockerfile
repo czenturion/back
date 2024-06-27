@@ -13,4 +13,6 @@ RUN yarn tsc --noEmit && yarn build
 
 COPY dist ./dist
 
+EXPOSE 3000
+
 CMD ["yarn", "start"]
