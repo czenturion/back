@@ -1,17 +1,20 @@
 import express from 'express'
+import path from 'path'
 
-const app = express()
-const port = process.env.port || 3000
+export const app = express()
+const port = process.env.port || 5000
 
 const jsonBodyMiddleware = express.json()
 app.use(jsonBodyMiddleware)
 
-const db = {
+export const db = {
   users: [
     {id: 1, name: 'first'},
     {id: 2, name: 'second'},
     {id: 3, name: 'third'},
-    {id: 4, name: 'fourth'}]
+    {id: 4, name: 'fourth'},
+    {id: 5, name: 'fifth'}
+  ]
 }
 const HTTP_STATUSES = {
   OK_200: 200,
@@ -23,7 +26,9 @@ const HTTP_STATUSES = {
 }
 
 app.get('/', (req, res) => {
-  res.json({ message: [{id: 1}, {id: 2}, {id: 3}]})
+  res
+    .status(HTTP_STATUSES.OK_200)
+    .sendFile(path.join(__dirname, '/pages/home.html'))
 })
 
 app.get('/users', (req, res) => {
