@@ -12,6 +12,7 @@ COPY src ./src
 RUN yarn tsc --noEmit && yarn build
 
 COPY dist ./dist
+COPY src/pages ./dist/pages
 
 EXPOSE 5000
 

@@ -28,7 +28,7 @@ const HTTP_STATUSES = {
 app.get('/', (req, res) => {
   res
     .status(HTTP_STATUSES.OK_200)
-    .sendFile(path.join(__dirname, '/pages/home.html'))
+    .sendFile(path.join(__dirname, 'pages', 'home.html'))
 })
 
 app.get('/users', (req, res) => {
