@@ -16,7 +16,7 @@ export const db = {
     {id: 5, name: 'fifth'}
   ]
 }
-const HTTP_STATUSES = {
+export const HTTP_STATUSES = {
   OK_200: 200,
   CREATED_201: 201,
   NO_CONTENT_204: 204,
@@ -103,6 +103,11 @@ app.put('/users/:id', (req, res) => {
 
   foundUser.name = name
 
+  res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+})
+
+app.delete('/__test__/data', (req, res) => {
+  db.users = []
   res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 })
 
