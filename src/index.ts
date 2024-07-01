@@ -1,5 +1,16 @@
-import express from 'express'
+import express, { Response } from 'express'
 import path from 'path'
+import {
+  RequestWithBody,
+  RequestWithParams,
+  RequestWithParamsAndBody,
+  RequestWithQuery
+} from './types'
+import { QueryUserModel } from './models/QueryUserModel'
+import { CreateUserModel } from './models/CreateUserModel'
+import { UserViewModel } from './models/UserViewModel'
+import { URIParamsUserIdModel } from './models/URIParamsUserIdModel'
+import { UpdateUserModel } from './models/UpdateUserModel'
 
 export const app = express()
 const port = process.env.port || 5000
@@ -7,13 +18,18 @@ const port = process.env.port || 5000
 const jsonBodyMiddleware = express.json()
 app.use(jsonBodyMiddleware)
 
-export const db = {
+type UserType = {
+  id: number
+  name: string
+  secret: string
+}
+
+export const db: { users: UserType[] } = {
   users: [
-    {id: 1, name: 'first'},
-    {id: 2, name: 'second'},
-    {id: 3, name: 'third'},
-    {id: 4, name: 'fourth'},
-    {id: 5, name: 'fifth'}
+    {id: 1, name: 'first', secret: 'qwerty'},
+    {id: 2, name: 'second', secret: 'qwerty'},
+    {id: 3, name: 'third', secret: 'qwerty'},
+    {id: 4, name: 'fourth', secret: 'qwerty'}
   ]
 }
 export const HTTP_STATUSES = {
@@ -25,14 +41,22 @@ export const HTTP_STATUSES = {
   NOT_FOUND_404: 404
 }
 
+const getUserViewModel = (user: UserType): UserViewModel => {
+  return {
+    id: user.id,
+    name: user.name
+  }
+}
+
 app.get('/', (req, res) => {
   res
     .status(HTTP_STATUSES.OK_200)
     .sendFile(path.join(__dirname, 'pages', 'home.html'))
 })
 
-app.get('/users', (req, res) => {
-  const name = req.query.name as string
+app.get('/users', (req: RequestWithQuery<QueryUserModel>,
+                   res: Response<UserViewModel[]>) => {
+  const name = req.query.name
   let foundUsers = db.users
 
   if (name) {
@@ -45,11 +69,12 @@ app.get('/users', (req, res) => {
     return
   }
 
-  res.send(foundUsers)
+  res.send(foundUsers.map(getUserViewModel))
 })
 
-app.get('/users/:id', (req, res) => {
-  const id = req.params.id as string
+app.get('/users/:id', (req: RequestWithParams<URIParamsUserIdModel>,
+                       res: Response<UserViewModel>) => {
+  const id = req.params.id
   const foundUser = db.users.find(u => u.id === +id)
 
   if (!foundUser) {
@@ -57,11 +82,12 @@ app.get('/users/:id', (req, res) => {
     return
   }
 
-  res.json(foundUser)
+  res.json(getUserViewModel(foundUser))
 })
 
-app.post('/users', (req, res) => {
-  const name = req.body.name as string
+app.post('/users', (req: RequestWithBody<CreateUserModel>,
+                    res: Response<UserViewModel>) => {
+  const name = req.body.name
   if (!name) {
     res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
     return
@@ -69,31 +95,32 @@ app.post('/users', (req, res) => {
 
   const createdUser = {
     id: +(new Date()),
-    name: name
+    name: name,
+    secret: ''
   }
 
   db.users.push(createdUser)
 
   res
     .status(HTTP_STATUSES.CREATED_201)
-    .json(createdUser)
+    .json(getUserViewModel(createdUser))
 })
 
-app.delete('/users/:id', (req, res) => {
-  const id = req.params.id as string
+app.delete('/users/:id', (req: RequestWithParams<URIParamsUserIdModel>, res) => {
+  const id = req.params.id
   db.users = db.users.filter(u => u.id !== +id)
 
   res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 })
 
-app.put('/users/:id', (req, res) => {
-  const name = req.body.name as string
+app.put('/users/:id', (req: RequestWithParamsAndBody<URIParamsUserIdModel, UpdateUserModel>, res) => {
+  const name = req.body.name
   if (!name) {
     res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
     return
   }
 
-  const id = req.params.id as string
+  const id = req.params.id
   const foundUser = db.users.find(u => u.id === +id)
 
   if (!foundUser) {
