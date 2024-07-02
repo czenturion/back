@@ -1,7 +1,8 @@
 import request from 'supertest'
-import { app, HTTP_STATUSES } from '../../src'
 import { CreateUserModel } from '../../src/models/CreateUserModel'
 import { UpdateUserModel } from '../../src/models/UpdateUserModel'
+import { app } from '../../src/app'
+import { HTTP_STATUSES } from '../../src/utils'
 
 
 describe('/users',() => {
