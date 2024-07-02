@@ -1,6 +1,5 @@
 import express from 'express'
-import { UserViewModel } from './models/UserViewModel'
-import { db, UserType } from './db/db'
+import { db } from './db/db'
 import { getUsersRoutes } from './routes/users'
 import { getTestsRoutes } from './routes/tests'
 import {getHomeRoutes} from "./routes/home";
