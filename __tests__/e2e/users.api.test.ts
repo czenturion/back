@@ -5,7 +5,7 @@ import { app } from '../../src/app'
 import { HTTP_STATUSES } from '../../src/utils'
 
 
-describe('/users',() => {
+describe('/users', () => {
 
   beforeAll(async () => {
 
@@ -62,7 +62,7 @@ describe('/users',() => {
 
     await request(app)
       .get('/users')
-      .expect(HTTP_STATUSES.OK_200, [createdUser1])
+      .expect(HTTP_STATUSES.OK_200, [ createdUser1 ])
   })
 
   let createdUser2: any = null
@@ -86,7 +86,7 @@ describe('/users',() => {
 
     await request(app)
       .get('/users')
-      .expect(HTTP_STATUSES.OK_200, [createdUser1, createdUser2])
+      .expect(HTTP_STATUSES.OK_200, [ createdUser1, createdUser2 ])
   })
 
   it('shouldn`t update user with incorrect input data', async () => {
@@ -100,7 +100,7 @@ describe('/users',() => {
 
     await request(app)
       .get('/users')
-      .expect(200, [createdUser1, createdUser2])
+      .expect(200, [ createdUser1, createdUser2 ])
   })
 
   it('shouldn`t update user that not exist', async () => {
@@ -118,7 +118,7 @@ describe('/users',() => {
     const name: Omit<UpdateUserModel, 'id'> = { name: 'cczznnttrrnn' }
 
     await request(app)
-      .put('/users/' +  createdUser1.id)
+      .put('/users/' + createdUser1.id)
       .send(name)
       .expect(HTTP_STATUSES.NO_CONTENT_204)
 

@@ -1,5 +1,5 @@
-import {UserType} from "./db/db";
-import {UserViewModel} from "./models/UserViewModel";
+import { UserType } from './db/db'
+import { UserViewModel } from './models/UserViewModel'
 
 export const HTTP_STATUSES = {
   OK_200: 200,

@@ -1,18 +1,17 @@
 import express, { Response } from 'express'
+import { getUserViewModel, HTTP_STATUSES } from '../utils'
 import {
   RequestWithBody,
   RequestWithParams,
   RequestWithParamsAndBody,
-  RequestWithQuery} from '../types'
+  RequestWithQuery
+} from '../types'
 import { UserViewModel } from '../models/UserViewModel'
 import { QueryUserModel } from '../models/QueryUserModel'
 import { CreateUserModel } from '../models/CreateUserModel'
 import { URIParamsUserIdModel } from '../models/URIParamsUserIdModel'
 import { UpdateUserModel } from '../models/UpdateUserModel'
 import { DBType } from '../db/db'
-import { getUserViewModel } from '../utils'
-import { HTTP_STATUSES } from '../utils'
-
 
 
 export const getUsersRoutes = (db: DBType) => {
@@ -20,7 +19,7 @@ export const getUsersRoutes = (db: DBType) => {
   const router = express.Router()
 
   router.get('/', (req: RequestWithQuery<QueryUserModel>,
-                             res: Response<UserViewModel[]>) => {
+                   res: Response<UserViewModel[]>) => {
     const name = req.query.name
     let foundUsers = db.users
 
@@ -38,7 +37,7 @@ export const getUsersRoutes = (db: DBType) => {
   })
 
   router.get('/:id', (req: RequestWithParams<URIParamsUserIdModel>,
-                                 res: Response<UserViewModel>) => {
+                      res: Response<UserViewModel>) => {
     const id = req.params.id
     const foundUser = db.users.find(u => u.id === +id)
 
@@ -51,7 +50,7 @@ export const getUsersRoutes = (db: DBType) => {
   })
 
   router.post('/', (req: RequestWithBody<CreateUserModel>,
-                              res: Response<UserViewModel>) => {
+                    res: Response<UserViewModel>) => {
     const name = req.body.name
     if (!name) {
       res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)

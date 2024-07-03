@@ -1,8 +1,8 @@
 import express from 'express'
 import { db } from './db/db'
+import { getHomeRoutes } from './routes/home'
 import { getUsersRoutes } from './routes/users'
 import { getTestsRoutes } from './routes/tests'
-import {getHomeRoutes} from "./routes/home";
 
 
 export const app = express()
