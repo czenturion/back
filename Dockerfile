@@ -8,10 +8,10 @@ RUN yarn install
 
 COPY tsconfig.json ./
 COPY src ./src
-COPY dist ./dist
 
 RUN yarn tsc --noEmit && yarn build
 
+RUN mkdir -p dist/pages
 COPY src/pages ./dist/pages
 
 EXPOSE 5000
