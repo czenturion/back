@@ -3,16 +3,12 @@ import path from 'path'
 import { HTTP_STATUSES } from '../utils'
 
 
-export const getHomeRoutes = () => {
+export const getHomeRoutes = Router({})
 
-  const router = Router()
+getHomeRoutes.get('/', (req,
+                        res) => {
+  res
+    .status(HTTP_STATUSES.OK_200)
+    .sendFile(path.join(__dirname, 'pages', 'home.html'))
+})
 
-  router.get('/', (req,
-                   res) => {
-    res
-      .status(HTTP_STATUSES.OK_200)
-      .sendFile(path.join(__dirname, 'pages', 'home.html'))
-  })
-
-  return router
-}
