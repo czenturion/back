@@ -1,26 +1,28 @@
 import { Response, Router } from 'express'
 import { getUserViewModel, HTTP_STATUSES } from '../utils'
-import { RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery } from '../types'
+import {
+  RequestWithBody,
+  RequestWithParams,
+  RequestWithParamsAndBody,
+  RequestWithQuery
+} from '../types'
 import { UserViewModel } from '../models/UserViewModel'
 import { QueryUserModel } from '../models/QueryUserModel'
 import { CreateUserModel } from '../models/CreateUserModel'
 import { URIParamsUserIdModel } from '../models/URIParamsUserIdModel'
 import { UpdateUserModel } from '../models/UpdateUserModel'
-import { db } from '../db/db'
+import { usersRepository } from '../repositories/users-repository'
 
 
 export const getUsersRoutes = Router({})
 
 
-getUsersRoutes.get('/', (req: RequestWithQuery<QueryUserModel>,
-                         res: Response<UserViewModel[]>) => {
-  const name = req.query.name
-  let foundUsers = db.users
+getUsersRoutes.get('/', (
+  req: RequestWithQuery<QueryUserModel>,
+  res: Response<UserViewModel[]>
+) => {
 
-  if (name) {
-    foundUsers = foundUsers
-      .filter(u => u.name.indexOf(name) > -1)
-  }
+  const foundUsers = usersRepository.findAllUsersOrByName(req.query.name?.toString())
 
   if (foundUsers.length === 0) {
     res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
@@ -30,10 +32,12 @@ getUsersRoutes.get('/', (req: RequestWithQuery<QueryUserModel>,
   res.send(foundUsers.map(getUserViewModel))
 })
 
-getUsersRoutes.get('/:id', (req: RequestWithParams<URIParamsUserIdModel>,
-                            res: Response<UserViewModel>) => {
-  const id = req.params.id
-  const foundUser = db.users.find(u => u.id === +id)
+getUsersRoutes.get('/:id', (
+  req: RequestWithParams<URIParamsUserIdModel>,
+  res: Response<UserViewModel>
+) => {
+
+  const foundUser = usersRepository.findUserById(+req.params.id)
 
   if (!foundUser) {
     res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
@@ -43,50 +47,48 @@ getUsersRoutes.get('/:id', (req: RequestWithParams<URIParamsUserIdModel>,
   res.json(getUserViewModel(foundUser))
 })
 
-getUsersRoutes.post('/', (req: RequestWithBody<CreateUserModel>,
-                          res: Response<UserViewModel>) => {
+getUsersRoutes.post('/', (
+  req: RequestWithBody<CreateUserModel>,
+  res: Response<UserViewModel>
+) => {
+
   const name = req.body.name
   if (!name) {
     res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
     return
   }
 
-  const createdUser = {
-    id: +(new Date()),
-    name: name,
-    secret: ''
-  }
-
-  db.users.push(createdUser)
+  const createdUser = usersRepository.createUser(name)
 
   res
     .status(HTTP_STATUSES.CREATED_201)
     .json(getUserViewModel(createdUser))
 })
 
-getUsersRoutes.delete('/:id', (req: RequestWithParams<URIParamsUserIdModel>, res) => {
-  const id = req.params.id
-  db.users = db.users.filter(u => u.id !== +id)
+getUsersRoutes.delete('/:id', (
+  req: RequestWithParams<URIParamsUserIdModel>,
+  res
+) => {
 
-  res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+  const isDeleted = usersRepository.deleteUser(+req.params.id)
+  if (isDeleted) {
+    res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+  } else {
+    res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+  }
 })
 
-getUsersRoutes.put('/:id', (req: RequestWithParamsAndBody<URIParamsUserIdModel, UpdateUserModel>, res) => {
-  const name = req.body.name
-  if (!name) {
-    res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
-    return
+getUsersRoutes.put('/:id', (
+  req: RequestWithParamsAndBody<URIParamsUserIdModel, UpdateUserModel>,
+  res
+) => {
+
+  const isUpdated = usersRepository.updateUser(+req.params.id, req.body.name)
+
+  if (isUpdated) {
+    const user = usersRepository.findUserById(+req.params.id)
+    res.send(user)
+  } else {
+    res.send(HTTP_STATUSES.NOT_FOUND_404)
   }
-
-  const id = req.params.id
-  const foundUser = db.users.find(u => u.id === +id)
-
-  if (!foundUser) {
-    res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
-    return
-  }
-
-  foundUser.name = name
-
-  res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 })

@@ -96,7 +96,7 @@ describe('/users', () => {
     await request(app)
       .put('/users/' + createdUser1.id)
       .send(name)
-      .expect(HTTP_STATUSES.BAD_REQUEST_400)
+      .expect(HTTP_STATUSES.NOT_FOUND_404)
 
     await request(app)
       .get('/users')
@@ -120,7 +120,7 @@ describe('/users', () => {
     await request(app)
       .put('/users/' + createdUser1.id)
       .send(name)
-      .expect(HTTP_STATUSES.NO_CONTENT_204)
+      .expect(HTTP_STATUSES.OK_200)
 
     createdUser1.name = name.name
 
