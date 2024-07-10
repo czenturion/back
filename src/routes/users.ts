@@ -53,8 +53,10 @@ getUsersRoutes.post('/', (
 ) => {
 
   const name = req.body.name
-  if (!name) {
-    res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+  if (!name.trim()) {
+    res
+      .status(HTTP_STATUSES.BAD_REQUEST_400)
+      .json({ message: 'Name is required' })
     return
   }
 
