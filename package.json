@@ -14,7 +14,8 @@
     "test": "jest --forceExit --detectOpenHandles  --watchAll --maxWorkers=1"
   },
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "express-validator": "^7.1.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",

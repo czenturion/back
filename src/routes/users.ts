@@ -1,23 +1,24 @@
 import { Response, Router } from 'express'
+import { body } from 'express-validator'
 import { getUserViewModel, HTTP_STATUSES } from '../utils'
-import {
-  RequestWithBody,
-  RequestWithParams,
-  RequestWithParamsAndBody,
-  RequestWithQuery
-} from '../types'
+import { RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery } from '../types'
 import { UserViewModel } from '../models/UserViewModel'
 import { QueryUserModel } from '../models/QueryUserModel'
 import { CreateUserModel } from '../models/CreateUserModel'
 import { URIParamsUserIdModel } from '../models/URIParamsUserIdModel'
 import { UpdateUserModel } from '../models/UpdateUserModel'
 import { usersRepository } from '../repositories/users-repository'
+import { inputValidationMiddleware } from '../middlewares/input-validation-middleware'
 
 
 export const getUsersRoutes = Router({})
 
+const nameValidation = body('name')
+  .trim()
+  .isLength({ min: 3, max: 10 })
+  .withMessage('Name should be from 3 to 10 symbols')
 
-getUsersRoutes.get('/', (
+getUsersRoutes.get('/',(
   req: RequestWithQuery<QueryUserModel>,
   res: Response<UserViewModel[]>
 ) => {
@@ -47,20 +48,12 @@ getUsersRoutes.get('/:id', (
   res.json(getUserViewModel(foundUser))
 })
 
-getUsersRoutes.post('/', (
+getUsersRoutes.post('/', nameValidation, inputValidationMiddleware, (
   req: RequestWithBody<CreateUserModel>,
   res: Response<UserViewModel>
 ) => {
 
-  const name = req.body.name
-  if (!name.trim()) {
-    res
-      .status(HTTP_STATUSES.BAD_REQUEST_400)
-      .json({ message: 'Name is required' })
-    return
-  }
-
-  const createdUser = usersRepository.createUser(name)
+  const createdUser = usersRepository.createUser(req.body.name)
 
   res
     .status(HTTP_STATUSES.CREATED_201)
@@ -80,7 +73,7 @@ getUsersRoutes.delete('/:id', (
   }
 })
 
-getUsersRoutes.put('/:id', (
+getUsersRoutes.put('/:id', nameValidation, inputValidationMiddleware, (
   req: RequestWithParamsAndBody<URIParamsUserIdModel, UpdateUserModel>,
   res
 ) => {
