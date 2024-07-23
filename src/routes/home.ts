@@ -8,7 +8,7 @@ export const getHomeRoutes = Router({})
 getHomeRoutes.get('/', (req,
                         res) => {
   res
-    .status(HTTP_STATUSES.OK_200)
+    .sendStatus(HTTP_STATUSES.OK_200)
     .sendFile(path.join(__dirname, '..', '..', 'pages', 'home.html'))
 })
 

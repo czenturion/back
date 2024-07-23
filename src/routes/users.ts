@@ -56,7 +56,7 @@ getUsersRoutes.post('/', nameValidation, inputValidationMiddleware, (
   const createdUser = usersRepository.createUser(req.body.name)
 
   res
-    .status(HTTP_STATUSES.CREATED_201)
+    .sendStatus(HTTP_STATUSES.CREATED_201)
     .json(getUserViewModel(createdUser))
 })
 
@@ -66,6 +66,7 @@ getUsersRoutes.delete('/:id', (
 ) => {
 
   const isDeleted = usersRepository.deleteUser(+req.params.id)
+
   if (isDeleted) {
     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
   } else {
@@ -82,8 +83,13 @@ getUsersRoutes.put('/:id', nameValidation, inputValidationMiddleware, (
 
   if (isUpdated) {
     const user = usersRepository.findUserById(+req.params.id)
-    res.send(user)
+
+    if (user) {
+      res.send(getUserViewModel(user!))
+    } else {
+      res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+    }
   } else {
-    res.send(HTTP_STATUSES.NOT_FOUND_404)
+    res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
   }
 })
